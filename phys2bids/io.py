@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """phys2bids interfaces for loading extension files."""
+
 import logging
 import os
 import warnings
@@ -530,7 +530,12 @@ def load_gep(filename):
                 data.append(np.loadtxt(fname))
 
     # Create trigger channel
-    trigger = np.hstack((np.zeros(int(30 / interval)), np.ones(int((duration - 30) / interval))))
+    trigger = np.hstack(
+        (
+            np.zeros(int(30 / interval)),
+            np.ones(int((duration - 30) / interval)),
+        )
+    )
 
     # Create final list of timeseries
     timeseries = [time_ch, trigger]
@@ -565,7 +570,6 @@ def read_siemens_channel(
     data = fpl.PhysioLog.from_filename(filename)
 
     if np.all(data.ts != 0):
-
         if channel_type == "ECG":
             freq_mod = round(
                 len(data.ts[::4])
@@ -586,7 +590,7 @@ def read_siemens_channel(
             start = physiologtime_to_seconds(data.mdh.start_time)
             stop = start + len(data.ts - 1) * frequency
             for i in range(4):
-                names.append(f"{channel_type}{i+1}")
+                names.append(f"{channel_type}{i + 1}")
                 units.append("")
                 timeseries.append(data.ts[i::4])
                 freq.append(data.rate * freq_mod)
@@ -668,32 +672,73 @@ def load_siemens(filename, dicomfolder=None):
 
     # Find and add additional data files
     filename = Path(filename)
-    fnames = sorted(glob(os.path.join(filename.parent, f"*{filename.name}.*")))
+    fnames = sorted(glob(os.path.join(filename.parent, "*")))
     if not len(fnames) == 0:
         for fname in fnames:
             if fname.endswith(".ecg"):
                 names, units, timeseries, freq, starttime, stoptime, data = read_siemens_channel(
-                    fname, "ECG", names, units, timeseries, freq, starttime, stoptime
+                    fname,
+                    "ECG",
+                    names,
+                    units,
+                    timeseries,
+                    freq,
+                    starttime,
+                    stoptime,
                 )
 
             elif fname.endswith(".ext"):
                 names, units, timeseries, freq, starttime, stoptime, data = read_siemens_channel(
-                    fname, "EXT", names, units, timeseries, freq, starttime, stoptime
+                    fname,
+                    "EXT",
+                    names,
+                    units,
+                    timeseries,
+                    freq,
+                    starttime,
+                    stoptime,
                 )
 
             elif fname.endswith(".ext2"):
                 names, units, timeseries, freq, starttime, stoptime, data = read_siemens_channel(
-                    fname, "EXT2", names, units, timeseries, freq, starttime, stoptime
+                    fname,
+                    "EXT2",
+                    names,
+                    units,
+                    timeseries,
+                    freq,
+                    starttime,
+                    stoptime,
                 )
 
             elif fname.endswith(".puls"):
                 names, units, timeseries, freq, starttime, stoptime, data = read_siemens_channel(
-                    fname, "PPG", names, units, timeseries, freq, starttime, stoptime
+                    fname,
+                    "PPG",
+                    names,
+                    units,
+                    timeseries,
+                    freq,
+                    starttime,
+                    stoptime,
                 )
 
             elif fname.endswith(".resp"):
                 names, units, timeseries, freq, starttime, stoptime, data = read_siemens_channel(
-                    fname, "respiratory", names, units, timeseries, freq, starttime, stoptime
+                    fname,
+                    "respiratory",
+                    names,
+                    units,
+                    timeseries,
+                    freq,
+                    starttime,
+                    stoptime,
+                )
+            else:
+                LGR.warning(
+                    f"Found {fname} that is either not physio data or not currently "
+                    "supported by phys2bids. In the latter case, please open an issue "
+                    "on GitHub!"
                 )
 
     checkstartlen = np.unique(starttime)
