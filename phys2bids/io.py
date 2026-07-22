@@ -586,20 +586,20 @@ def read_siemens_channel(
                     f"Incoherency found between logged time and frequency by a factor of {freq_mod}. Please check frequency time."
                 )
 
-            frequency = data.freq * freq_mod
+            frequency = data.rate * freq_mod
             start = physiologtime_to_seconds(data.mdh.start_time)
             stop = start + len(data.ts - 1) * frequency
             for i in range(4):
                 names.append(f"{channel_type}{i + 1}")
                 units.append("")
                 timeseries.append(data.ts[i::4])
-                freq.append(data.rate * freq_mod)
+                freq.append(frequency)
                 starttime.append(physiologtime_to_seconds(data.mdh.start_time))
                 stoptime.append(stop)
 
         else:
             freq_mod = round(
-                len(data.ts[::4])
+                len(data.ts)
                 / (
                     (
                         physiologtime_to_seconds(data.mdh.stop_time)
@@ -613,13 +613,13 @@ def read_siemens_channel(
                     f"Incoherency found between logged time and frequency by a factor of {freq_mod}. Please check frequency time."
                 )
 
-            frequency = data.freq * freq_mod
+            frequency = data.rate * freq_mod
             start = physiologtime_to_seconds(data.mdh.start_time)
             stop = start + len(data.ts - 1) * frequency
             names.append(channel_type)
             units.append("")
             timeseries.append(data.ts)
-            freq.append(data.rate * freq_mod)
+            freq.append(frequency)
             starttime.append(physiologtime_to_seconds(data.mdh.start_time))
             stoptime.append(stop)
 
