@@ -569,7 +569,7 @@ def read_siemens_channel(
 
     data = fpl.PhysioLog.from_filename(filename)
 
-    if np.all(data.ts != 0):
+    if np.all(np.asarray(data.ts) != 0):
         if channel_type == "ECG":
             freq_mod = round(
                 len(data.ts[::4])
