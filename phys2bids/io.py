@@ -793,9 +793,6 @@ def load_siemens(filename, dicomfolder=None):
             phys_stop = phys_start + len(t)
             timeseries[n][phys_start:phys_stop] = t
 
-    # Calculate time in seconds
-    time_ch = time_ch / 1000
-
     # Read the dicom to find start time, if it's given, otherwise assume it's
     trigger = np.zeros_like(time_ch)
 
@@ -829,10 +826,12 @@ def load_siemens(filename, dicomfolder=None):
                 except pydicom.errors.InvalidDicomError:
                     continue
 
-            epi_start = acqtime_to_seconds(first_dcm.AcquisitionTime) - data.mdh.start_time / 1000
+            epi_start = acqtime_to_seconds(first_dcm.AcquisitionTime) - physiologtime_to_seconds(
+                data.mdh.start_time
+            )
             epi_stop = (
                 acqtime_to_seconds(last_dcm.AcquisitionTime)
-                - data.mdh.start_time / 1000
+                - physiologtime_to_seconds(data.mdh.start_time)
                 + float(last_dcm.get("RepetitionTime", 0)) / 1000
             )
 
