@@ -815,8 +815,19 @@ def load_siemens(filename, dicomfolder=None):
                     if os.path.isfile(os.path.join(dicomfolder, f))
                 ]
             )
-            first_dcm = pydicom.dcmread(files[0], stop_before_pixels=True)
-            last_dcm = pydicom.dcmread(files[-1], stop_before_pixels=True)
+            for dicomfile in files:
+                try:
+                    first_dcm = pydicom.dcmread(dicomfile, stop_before_pixels=True)
+                    break
+                except pydicom.errors.InvalidDicomError:
+                    continue
+
+            for dicomfile in files:
+                try:
+                    last_dcm = pydicom.dcmread(dicomfile, stop_before_pixels=True)
+                    break
+                except pydicom.errors.InvalidDicomError:
+                    continue
 
             epi_start = acqtime_to_seconds(first_dcm.AcquisitionTime) - data.mdh.start_time / 1000
             epi_stop = (
