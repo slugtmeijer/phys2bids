@@ -544,7 +544,17 @@ def load_gep(filename):
 
 
 def acqtime_to_seconds(acq_time_str):
-    """ """
+    """
+    Parameters
+    ----------
+    acq_time_str : TYPE
+        Description
+
+    Returns
+    -------
+    TYPE
+        Description
+    """
     hh = int(acq_time_str[0:2])
     mm = int(acq_time_str[2:4])
     ss = int(acq_time_str[4:6])
@@ -553,7 +563,17 @@ def acqtime_to_seconds(acq_time_str):
 
 
 def physiologtime_to_seconds(pulse_time):
-    """ """
+    """
+    Parameters
+    ----------
+    pulse_time : TYPE
+        Description
+
+    Returns
+    -------
+    TYPE
+        Description
+    """
     hh = pulse_time.hour
     mm = pulse_time.minute
     ss = pulse_time.second
@@ -564,7 +584,26 @@ def physiologtime_to_seconds(pulse_time):
 def read_siemens_channel(
     filename, channel_type, names, units, timeseries, freq, starttime, stoptime
 ):
-    """ """
+    """
+    Parameters
+    ----------
+    filename : TYPE
+        Description
+    channel_type : TYPE
+        Description
+    names : TYPE
+        Description
+    units : TYPE
+        Description
+    timeseries : TYPE
+        Description
+    freq : TYPE
+        Description
+    starttime : TYPE
+        Description
+    stoptime : TYPE
+        Description
+    """
     import fmri_physio_log as fpl
 
     data = fpl.PhysioLog.from_filename(filename)
@@ -623,7 +662,7 @@ def read_siemens_channel(
             starttime.append(physiologtime_to_seconds(data.mdh.start_time))
             stoptime.append(stop)
 
-        return names, units, timeseries, freq, starttime, stoptime, data
+    return names, units, timeseries, freq, starttime, stoptime, data
 
 
 def load_siemens(filename, dicomfolder=None):
@@ -640,9 +679,9 @@ def load_siemens(filename, dicomfolder=None):
 
     Parameters
     ----------
-    filename: str
+    filename : str
         path to the SIEMENS scanner physiological file
-    dicomfolder: str or None
+    dicomfolder : str or None
         path to the folder containing the DICOM files
 
     Returns
