@@ -7,7 +7,10 @@ import requests
 
 def pytest_addoption(parser):
     parser.addoption(
-        "--skipintegration", action="store_true", default=False, help="Skip integration tests."
+        "--skipintegration",
+        action="store_true",
+        default=False,
+        help="Skip integration tests.",
     )
 
 
@@ -41,13 +44,11 @@ def fetch_file(osf_id, path, filename):
     # this three lines make tests downloads work in windows
     if os.name == "nt":
         orig_sslsocket_init = ssl.SSLSocket.__init__
-        ssl.SSLSocket.__init__ = (
-            lambda *args, cert_reqs=ssl.CERT_NONE, **kwargs: orig_sslsocket_init(
-                *args, cert_reqs=ssl.CERT_NONE, **kwargs
-            )
+        ssl.SSLSocket.__init__ = lambda *args, cert_reqs=ssl.CERT_NONE, **kwargs: (
+            orig_sslsocket_init(*args, cert_reqs=ssl.CERT_NONE, **kwargs)
         )
         ssl._create_default_https_context = ssl._create_unverified_context
-    url = "https://osf.io/{}/download".format(osf_id)
+    url = f"https://osf.io/{osf_id}/download"
     full_path = os.path.join(path, filename)
     if not os.path.isfile(full_path):
         req = requests.get(url, allow_redirects=True)
@@ -146,11 +147,15 @@ def ge_badfiles(testpath):
 
 @pytest.fixture
 def SIEMENS_files(testpath):
-    _ = fetch_file(" ", testpath, "275_pulse_part_1.puls")
-    _ = fetch_file(" ", testpath, "275_pulse_part_1.ecg")
-    _ = fetch_file(" ", testpath, "275_pulse_part_1.ext")
-    _ = fetch_file(" ", testpath, "275_pulse_part_1.ext2")
-    return fetch_file(" ", testpath, "275_resp_part_1.resp")
+    _ = fetch_file("vqe9n", testpath, "0001.2025.07.18.12.29.39.82808.551913598.IMA")
+    _ = fetch_file("27bwc", testpath, "0002.2025.07.18.12.29.39.82808.551913580.IMA")
+    _ = fetch_file("5qf6u", testpath, "0003.2025.07.18.12.29.39.82808.551913634.IMA")
+
+    _ = fetch_file("srmg5", testpath, "275_pulse_part_1.ecg")
+    _ = fetch_file("3974e", testpath, "275_pulse_part_1.ext")
+    _ = fetch_file("mtxsa", testpath, "275_pulse_part_1.ext2")
+    _ = fetch_file("tdhx5", testpath, "275_pulse_part_1.puls")
+    return fetch_file("xt6sb", testpath, "275_resp_part_1.resp")
 
 
 @pytest.fixture

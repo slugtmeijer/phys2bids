@@ -220,7 +220,7 @@ def test_load_gep_two_files_resp(ge_two_gep_files_resp, testpath):
 
 def test_SIEMENS(SIEMENS_files, testpath):
     # Load data
-    phys_obj = io.load_siemens(SIEMENS_files)
+    phys_obj = io.load_siemens(SIEMENS_files, dicomfolder=testpath)
 
     assert phys_obj.ch_name == [
         "time",
