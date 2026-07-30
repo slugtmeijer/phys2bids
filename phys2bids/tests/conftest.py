@@ -40,6 +40,9 @@ def fetch_file(osf_id, path, filename):
     full_path : str
         Full path to downloaded `filename`
     """
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    }
     # This restores the same behavior as before.
     # this three lines make tests downloads work in windows
     if os.name == "nt":
@@ -51,7 +54,7 @@ def fetch_file(osf_id, path, filename):
     url = f"https://osf.io/{osf_id}/download"
     full_path = os.path.join(path, filename)
     if not os.path.isfile(full_path):
-        req = requests.get(url, allow_redirects=True)
+        req = requests.get(url, headers=headers, allow_redirects=True, stream=True)
         req.raise_for_status()
         with open(full_path, "wb") as f:
             f.write(req.content)
