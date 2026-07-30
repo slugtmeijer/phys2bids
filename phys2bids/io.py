@@ -608,7 +608,7 @@ def read_siemens_channel(
 
     data = fpl.PhysioLog.from_filename(filename)
 
-    if np.all(np.asarray(data.ts) != 0):
+    if np.any(np.asarray(data.ts) != 0):
         if channel_type == "ECG":
             freq_mod = round(
                 len(data.ts[::4])
@@ -658,7 +658,7 @@ def read_siemens_channel(
             names.append(channel_type)
             units.append("")
             timeseries.append(np.asarray(data.ts))
-            freq.append(frequency)
+            freq.append(float(frequency))
             starttime.append(physiologtime_to_seconds(data.mdh.start_time))
             stoptime.append(stop)
 
