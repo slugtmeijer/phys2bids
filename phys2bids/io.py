@@ -631,7 +631,7 @@ def read_siemens_channel(
             for i in range(4):
                 names.append(f"{channel_type}{i + 1}")
                 units.append("")
-                timeseries.append(data.ts[i::4])
+                timeseries.append(np.asarray(data.ts[i::4]))
                 freq.append(frequency)
                 starttime.append(physiologtime_to_seconds(data.mdh.start_time))
                 stoptime.append(stop)
@@ -657,7 +657,7 @@ def read_siemens_channel(
             stop = start + (len(data.ts) - 1) * frequency
             names.append(channel_type)
             units.append("")
-            timeseries.append(data.ts)
+            timeseries.append(np.asarray(data.ts))
             freq.append(frequency)
             starttime.append(physiologtime_to_seconds(data.mdh.start_time))
             stoptime.append(stop)
