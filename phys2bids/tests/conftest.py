@@ -7,7 +7,10 @@ import requests
 
 def pytest_addoption(parser):
     parser.addoption(
-        "--skipintegration", action="store_true", default=False, help="Skip integration tests."
+        "--skipintegration",
+        action="store_true",
+        default=False,
+        help="Skip integration tests.",
     )
 
 
@@ -37,20 +40,21 @@ def fetch_file(osf_id, path, filename):
     full_path : str
         Full path to downloaded `filename`
     """
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    }
     # This restores the same behavior as before.
     # this three lines make tests downloads work in windows
     if os.name == "nt":
         orig_sslsocket_init = ssl.SSLSocket.__init__
-        ssl.SSLSocket.__init__ = (
-            lambda *args, cert_reqs=ssl.CERT_NONE, **kwargs: orig_sslsocket_init(
-                *args, cert_reqs=ssl.CERT_NONE, **kwargs
-            )
+        ssl.SSLSocket.__init__ = lambda *args, cert_reqs=ssl.CERT_NONE, **kwargs: (
+            orig_sslsocket_init(*args, cert_reqs=ssl.CERT_NONE, **kwargs)
         )
         ssl._create_default_https_context = ssl._create_unverified_context
-    url = "https://osf.io/{}/download".format(osf_id)
+    url = f"https://osf.io/{osf_id}/download"
     full_path = os.path.join(path, filename)
     if not os.path.isfile(full_path):
-        req = requests.get(url, allow_redirects=True)
+        req = requests.get(url, headers=headers, allow_redirects=True, stream=True)
         req.raise_for_status()
         with open(full_path, "wb") as f:
             f.write(req.content)
@@ -116,13 +120,13 @@ def ge_one_gep_file(testpath):
 
 @pytest.fixture
 def ge_two_gep_files_ppg(testpath):
-    tmp = fetch_file("qawjv", testpath, "RESPData_epiRT_0000000000_00_00_000.gep")
+    _ = fetch_file("qawjv", testpath, "RESPData_epiRT_0000000000_00_00_000.gep")
     return fetch_file("wb84d", testpath, "PPGData_epiRT_0000000000_00_00_000.gep")
 
 
 @pytest.fixture
 def ge_two_gep_files_resp(testpath):
-    tmp = fetch_file("wb84d", testpath, "PPGData_epiRT_0000000000_00_00_000.gep")
+    _ = fetch_file("wb84d", testpath, "PPGData_epiRT_0000000000_00_00_000.gep")
     return fetch_file("qawjv", testpath, "RESPData_epiRT_0000000000_00_00_000.gep")
 
 
@@ -133,15 +137,28 @@ def ge_one_raw_file(testpath):
 
 @pytest.fixture
 def ge_two_raw_files(testpath):
-    tmp = fetch_file("49xpw", testpath, "RESPData_epiRT_0000000000_00_00_000")
+    _ = fetch_file("49xpw", testpath, "RESPData_epiRT_0000000000_00_00_000")
     return fetch_file("u9wsr", testpath, "PPGData_epiRT_0000000000_00_00_000")
 
 
 @pytest.fixture
 def ge_badfiles(testpath):
-    tmp = fetch_file("tdmyn", testpath, "PPGData_epiRT_columnscsv_00_00_000")
-    tmp = fetch_file("b6skq", testpath, "PPGData_epiRT_columnstsv_00_00_000")
+    _ = fetch_file("tdmyn", testpath, "PPGData_epiRT_columnscsv_00_00_000")
+    _ = fetch_file("b6skq", testpath, "PPGData_epiRT_columnstsv_00_00_000")
     return fetch_file("8235b", testpath, "PPGData_epiRT_string0000_00_00_000")
+
+
+@pytest.fixture
+def SIEMENS_files(testpath):
+    _ = fetch_file("vqe9n", testpath, "0001.2025.07.18.12.29.39.82808.551913598.IMA")
+    _ = fetch_file("27bwc", testpath, "0002.2025.07.18.12.29.39.82808.551913580.IMA")
+    _ = fetch_file("5qf6u", testpath, "0003.2025.07.18.12.29.39.82808.551913634.IMA")
+
+    _ = fetch_file("srmg5", testpath, "275_pulse_part_1.ecg")
+    _ = fetch_file("3974e", testpath, "275_pulse_part_1.ext")
+    _ = fetch_file("mtxsa", testpath, "275_pulse_part_1.ext2")
+    _ = fetch_file("tdhx5", testpath, "275_pulse_part_1.puls")
+    return fetch_file("xt6sb", testpath, "275_resp_part_1.resp")
 
 
 @pytest.fixture
